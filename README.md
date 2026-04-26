@@ -1,6 +1,6 @@
-# Banking App Backend
+# Banking App
 
-This is a Python Flask backend application for a basic banking system. It uses MongoDB as its database.
+This is a Python Flask backend application for a basic banking system. It uses MongoDB as its database. A frontend application for this project is currently under development and will be available soon.
 
 ## Tech Stack
 
@@ -71,8 +71,8 @@ banking-app/
 - **Request Body**:
   ```json
   {
-    "name": "John Doe",
-    "email": "john@example.com",
+    "name": "Sarveesh",
+    "email": "sarveesh@example.com",
     "phone": "1234567890"
   }
   ```
@@ -91,7 +91,7 @@ banking-app/
     "users": [
       {
         "id": "...",
-        "name": "John Doe"
+        "name": "Sarveesh"
       }
     ]
   }
@@ -108,8 +108,8 @@ banking-app/
       "status": "success",
       "user": {
         "id": "...",
-        "name": "John Doe",
-        "email": "john@example.com",
+        "name": "Sarveesh",
+        "email": "sarveesh@example.com",
         "phone": "1234567890"
       }
     }
@@ -123,7 +123,7 @@ banking-app/
 - **Request Body**: Any user fields to update.
   ```json
   {
-    "name": "Jane Doe"
+    "name": "Sarveesh"
   }
   ```
 - **Responses**:
