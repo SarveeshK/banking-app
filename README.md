@@ -27,6 +27,20 @@ banking-app/
 
 - Python 3.x
 - MongoDB running locally on the default port (27017)
+- [Postman](https://www.postman.com/downloads/) (for testing APIs)
+
+## Database Connection
+
+This application connects to a local MongoDB instance. 
+- **Connection URI**: `mongodb://localhost:27017`
+- **Database Name**: `banking_app`
+
+Collections (`users`, `accounts`, `transactions`) are created automatically when data is inserted.
+You can verify the database connection and test data flow by running the included test script:
+```bash
+cd Backend
+python test_db.py
+```
 
 ## How to Run the Project
 
@@ -44,6 +58,16 @@ banking-app/
    python app.py
    ```
    The API will be running and available at `http://127.0.0.1:5000/`.
+
+## Testing with Postman
+
+1. Download and open **Postman**.
+2. Ensure the Flask backend is running.
+3. For a simple test, create a **GET** request to `http://127.0.0.1:5000/` and click **Send**. You should receive `{"message": "API running"}`.
+4. For endpoints that require data (e.g., POST `/users`):
+   - Set the method to **POST** and URL to `http://127.0.0.1:5000/users`.
+   - Go to the **Body** tab, select **raw**, and choose **JSON** from the dropdown.
+   - Paste the sample JSON payload from the API reference below and click **Send**.
 
 ---
 
