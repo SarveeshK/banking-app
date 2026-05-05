@@ -10,7 +10,7 @@ accounts = db["accounts"]
 transactions = db["transactions"]
 
 
-# ───── DEMO DATA (CHANGE FOR NEW USER) ─────
+# ───── DEMO DATA ─────
 NAME = "Demo User"
 EMAIL = "demo_final@test.com"
 ACCOUNT_NO = "8888888888"
@@ -60,6 +60,10 @@ def create_account(user_id):
 def transact(type, amount):
     acc = accounts.find_one({"accountNumber": ACCOUNT_NO})
 
+    if not acc:
+        print("Account not found")
+        return
+
     balance = acc["balance"]
 
     # Prevent negative balance
@@ -85,29 +89,36 @@ def transact(type, amount):
         {"$set": {"balance": new_balance}}
     )
 
-    print(f"{type} ₹{amount} → {new_balance}")
+    print(f"{type} ₹{amount} → {balance} → {new_balance}")
 
 
 # ───── READ FUNCTIONS ─────
 def show_balance():
     acc = accounts.find_one({"accountNumber": ACCOUNT_NO})
+
+    if not acc:
+        print("Account not found")
+        return
+
     print("Final Balance:", acc["balance"])
 
 
 def show_history():
     print("\nTransaction History:")
+
     for t in transactions.find({"accountNumber": ACCOUNT_NO}):
         print(f"{t.get('transactionType')} ₹{t.get('amount')} → {t.get('balanceAfter')}")
 
 
 # ───── MAIN FLOW ─────
-user_id = create_user()
-create_account(user_id)
+if __name__ == "__main__":
+    user_id = create_user()
+    create_account(user_id)
 
-transact("CREDIT", 1000)
-transact("CREDIT", 500)
-transact("DEBIT", 200)
-transact("CREDIT", 700)
+    transact("CREDIT", 1000)
+    transact("CREDIT", 500)
+    transact("DEBIT", 200)
+    transact("CREDIT", 700)
 
-show_balance()
-show_history()
+    show_balance()
+    show_history()
