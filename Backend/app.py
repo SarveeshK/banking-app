@@ -21,6 +21,58 @@ def home():
 
 
 # ===============================
+# 🔐 AUTH APIs (Login/Signup)
+# ===============================
+@app.route("/auth/login", methods=["POST"])
+def login():
+    data = request.json
+    email = data.get("email")
+    password = data.get("password")
+
+    user = users_col.find_one({"email": email})
+    if not user:
+        return jsonify({"status": "failure", "message": "User not found"})
+    
+    # Simple password check for prototype
+    if user.get("password") and user.get("password") != password:
+        return jsonify({"status": "failure", "message": "Invalid password"})
+
+    account = accounts_col.find_one({"userId": str(user["_id"])})
+    if not account:
+        return jsonify({"status": "failure", "message": "Account not found for user"})
+
+    return jsonify({"status": "success", "accountNumber": account["accountNumber"], "name": user.get("name", "User")})
+
+
+@app.route("/auth/signup", methods=["POST"])
+def signup():
+    data = request.json
+    email = data.get("email")
+    password = data.get("password")
+
+    if users_col.find_one({"email": email}):
+        return jsonify({"status": "failure", "message": "Email already exists. Please log in."})
+
+    name = email.split("@")[0]
+    user_id = users_col.insert_one({
+        "name": name,
+        "email": email,
+        "password": password,
+        "createdAt": datetime.utcnow()
+    }).inserted_id
+
+    # Create an account for the new user
+    acc_num = str(int(datetime.utcnow().timestamp()))
+    accounts_col.insert_one({
+        "userId": str(user_id),
+        "accountNumber": acc_num,
+        "balance": 0,
+        "createdAt": datetime.utcnow()
+    })
+
+    return jsonify({"status": "success", "accountNumber": acc_num, "name": name})
+
+# ===============================
 # 👤 USER APIs
 # ===============================
 
@@ -157,10 +209,12 @@ def get_account(account_number):
         return jsonify({"status": "failure", "message": "Account not found"})
 
     txns = []
-    for t in transactions_col.find({"accountNumber": account_number}):
+    for t in transactions_col.find({"accountNumber": account_number}).sort("createdAt", -1):
         txns.append({
+            "id": str(t["_id"]),
             "type": t.get("transactionType"),
             "amount": t.get("amount"),
+            "category": t.get("category", "General"),
             "balanceAfter": t.get("balanceAfter")
         })
 
@@ -215,6 +269,7 @@ def create_transaction():
         "userId": data.get("userId"),
         "transactionType": data.get("type"),
         "amount": amount,
+        "category": data.get("category", "General"),
         "balanceBefore": balance_before,
         "balanceAfter": balance_after,
         "createdAt": datetime.utcnow()
